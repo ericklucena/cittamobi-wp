@@ -1,0 +1,111 @@
+﻿<Page
+    x:Class="CittaMobiWP.VehiclesNoStop"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CittaMobiWP"
+    xmlns:converter="using:CittaMobiWP.Services"
+    xmlns:behaviors="using:CittaMobiWP.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:Maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <converter:TypeStringToColorConverter x:Key="TypeToColor"/>
+    </Page.Resources>
+
+    <Grid x:Name="LayoutRoot">
+
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title Panel -->
+        <StackPanel Grid.Row="0" Margin="19,0,0,0">
+            <TextBlock x:Uid="ApplicationNameBlock" Style="{ThemeResource TitleTextBlockStyle}" Foreground="{ThemeResource PhoneAccentBrush}" Margin="0,12,0,0"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid x:Name="BusStop" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4"/>
+                    <ColumnDefinition Width="4"/>
+                    <ColumnDefinition Width="0.8*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Background="{ThemeResource PhoneAccentBrush}" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding RouteMnemonic}" Foreground="{ThemeResource PhoneForegroundBrush}"  FontSize="{ThemeResource TextStyleExtraLargeFontSize}" TextTrimming="WordEllipsis"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding ServiceMnemonic}" Foreground="{ThemeResource PhoneForegroundBrush}"  FontSize="{ThemeResource TextStyleMediumFontSize}"/>
+                <TextBlock x:Name="LastUpdate" Grid.Row="2" Grid.Column="2" Text="" Foreground="{ThemeResource PhoneForegroundBrush}"  FontSize="{ThemeResource TextStyleMediumFontSize}"/>
+            </Grid>
+            <ProgressBar Grid.Row="1"
+                         x:Name="PredictionProgressBar"
+                         Height="10"
+                         IsIndeterminate="True"
+                         IsEnabled="True"
+                         Visibility="Collapsed"
+                         />
+            <Maps:MapControl Grid.Row="2" 
+                             x:Name="MapControl" 
+                             MapServiceToken="h9deKoV38Eza9AoEjrTVTg"
+                             >
+                <i:Interaction.Behaviors>
+                    <behaviors:PushpinCollectionBehavior  x:Name="MapVehicles" >
+                    <behaviors:PushpinCollectionBehavior.ItemTemplate>
+                        <DataTemplate>
+                            <Grid x:Name="VehicleIcon"
+                                  Maps:MapControl.Location="{Binding Geopoint}"
+                                  Maps:MapControl.NormalizedAnchorPoint="{Binding AnchorPoint}"
+                                  >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="3"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="1" Background="{ThemeResource PhoneAccentBrush}"/>
+                                <Image Grid.Column="0" x:Name="userIcon"
+                                           Source="Assets/bus-pin.png"
+                                           Height="60" Width="30"
+                                           Visibility="Visible"
+                                           />
+                            </Grid>
+                        </DataTemplate>
+                    </behaviors:PushpinCollectionBehavior.ItemTemplate>
+                    </behaviors:PushpinCollectionBehavior>
+                    <behaviors:PushpinCollectionBehavior  x:Name="MapStops" >
+                        <behaviors:PushpinCollectionBehavior.ItemTemplate>
+                            <DataTemplate>
+                                <Image x:Name="busIcon"
+                                           Tag="{Binding Id}"
+                                           Source="Assets/stop-pin.png"
+                                           Maps:MapControl.Location="{Binding Geopoint}"
+                                           Maps:MapControl.NormalizedAnchorPoint="{Binding AnchorPoint}"
+                                           Height="20" Width="20"
+                                           Visibility="Visible"
+                                    />
+                            </DataTemplate>
+                        </behaviors:PushpinCollectionBehavior.ItemTemplate>
+                    </behaviors:PushpinCollectionBehavior>
+                </i:Interaction.Behaviors>
+            </Maps:MapControl>
+        </Grid>
+    </Grid>
+</Page>

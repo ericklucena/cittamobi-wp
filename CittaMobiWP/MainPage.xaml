@@ -1,0 +1,357 @@
+﻿<Page xmlns:UI="using:Microsoft.Advertising.Mobile.UI" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CittaMobiWP"
+    xmlns:converter="using:CittaMobiWP.Services"
+    xmlns:behaviors="using:CittaMobiWP.Behaviors"
+    xmlns:adRotator="using:AdRotator"
+    xmlns:adduplex="using:AdDuplex.Universal.Controls.WinPhone.XAML"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    x:Class="CittaMobiWP.MainPage"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <converter:TypeStringToColorConverter x:Key="TypeToColor"/>
+    </Page.Resources>
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!--
+        <adRotator:AdRotatorControl Grid.Row="1" 
+		    x:Name="MyAdRotatorControl"
+		    AdHeight="80"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+		    AdWidth="400"
+		    LocalSettingsLocation="defaultAdSettings.xml"
+		    AutoStartAds="True" 
+        />
+        -->
+        <adduplex:AdControl Grid.Row="1" AdUnitId="181631" AppKey="2bc6541c-0739-4ecd-a743-ecb27cdb08c3"/>
+        <Pivot Grid.Row="0" x:Uid="ApplicationName" x:Name="MainPivot" Foreground="{ThemeResource PhoneAccentBrush}" SelectionChanged="MainPivot_SelectionChanged">
+            <!--
+            <PivotItem Header="Linhas" x:Name="LinesPivot">
+                <Grid>
+                    <ListView x:Name="busLines" ItemsSource="{Binding Items}" SelectionChanged="busLines_SelectionChanged" Background="{ThemeResource PhoneBackgroundBrush}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid x:Name="BusLine">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="0.8*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Background="{ThemeResource PhoneAccentBrush}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Name}" Foreground="{ThemeResource PhoneForegroundBrush}" FontSize="{ThemeResource TextStyleLargeFontSize}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Direction}" Foreground="{ThemeResource PhoneForegroundBrush}"  FontSize="{ThemeResource TextStyleMediumFontSize}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </PivotItem>
+            -->
+            <PivotItem x:Uid="MapScreen" x:Name="MapPivot">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <ProgressBar Grid.Row="0"
+                                 x:Name="MapProgressBar"
+                                 Height="10"
+                                 IsIndeterminate="True"
+                                 IsEnabled="True"
+                                 Visibility="Collapsed"
+                                 />
+                    <Maps:MapControl Grid.Row="1" 
+                                     x:Name="mapControl" 
+                                     MapServiceToken="h9deKoV38Eza9AoEjrTVTg"
+                                     CenterChanged="MapControl_CenterChanged"
+                                     LoadingStatusChanged="MapControl_CenterChanged"
+                                     >
+                        <i:Interaction.Behaviors>
+                            <behaviors:PushpinCollectionBehavior  x:Name="MapStops" >
+                                <behaviors:PushpinCollectionBehavior.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Maps:MapControl.Location="{Binding Geopoint}">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="3"/>
+                                            </Grid.RowDefinitions>
+                                            <Image Grid.Row="0"
+                                               x:Name="busIcon"
+                                               Tag="{Binding Id}"
+                                               Source="Assets/bus-stop.png"
+                                               Maps:MapControl.Location="{Binding Geopoint}"
+                                               Height="60" Width="30"
+                                               Visibility="Visible"
+                                               Tapped="busIcon_Tapped"
+                                            />
+                                            <StackPanel Grid.Row="1" Background="{ThemeResource PhoneAccentBrush}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </behaviors:PushpinCollectionBehavior.ItemTemplate>
+                            </behaviors:PushpinCollectionBehavior>
+                            <behaviors:PushpinCollectionBehavior  x:Name="UserLocation" >
+                                <behaviors:PushpinCollectionBehavior.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Maps:MapControl.Location="{Binding Geopoint}"
+                                              Maps:MapControl.NormalizedAnchorPoint="{Binding AnchorPoint}"
+                                            >
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="3"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="1" Background="{ThemeResource PhoneAccentBrush}"/>
+                                            <Image Grid.Column="0" x:Name="userIcon"
+                                                   Source="Assets/user-pin.png"
+                                                   Height="60" Width="30"
+                                                   Visibility="Visible"
+                                                   />
+                                        </Grid>
+                                    </DataTemplate>
+                                </behaviors:PushpinCollectionBehavior.ItemTemplate>
+                            </behaviors:PushpinCollectionBehavior>
+                        </i:Interaction.Behaviors>
+                    </Maps:MapControl>
+                </Grid>
+            </PivotItem>
+            <PivotItem x:Uid="PredictionScreen" x:Name="PredictionPivot">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid x:Name="BusStop" Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="0.8*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Background="{ThemeResource PhoneAccentBrush}" />
+                        <TextBlock x:Name="SelectedStopName" Grid.Row="0" Grid.Column="2" Text="Nenhuma parada selecionada" Foreground="{ThemeResource PhoneForegroundBrush}"  FontSize="{ThemeResource TextStyleLargeFontSize}" TextTrimming="WordEllipsis"/>
+                        <TextBlock x:Name="LastUpdate" Grid.Row="1" Grid.Column="2" Text="" Foreground="{ThemeResource PhoneForegroundBrush}"  FontSize="{ThemeResource TextStyleMediumFontSize}"/>
+                    </Grid>
+                    <ProgressBar Grid.Row="1"
+                                 x:Name="PredictionProgressBar"
+                                 Height="10"
+                                 IsIndeterminate="True"
+                                 IsEnabled="True"
+                                 Visibility="Collapsed"/>
+                    <ListView Grid.Row="2" x:Name="predictions" 
+                              ItemsSource="{Binding CurrentPredictionList}" 
+                              Background="{ThemeResource PhoneBackgroundBrush}" 
+                              Height="Auto" 
+                              ItemClick="predictions_ItemClick"
+                              IsItemClickEnabled="True">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid x:Name="Service" Margin="0,5,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="4"/>
+                                        <ColumnDefinition Width="4"/>
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Background="{Binding NextArrivalType, Converter={StaticResource TypeToColor}}" />
+                                    <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding RouteCode}" Foreground="{ThemeResource PhoneForegroundBrush}" FontSize="{ThemeResource TextStyleLargeFontSize}" TextTrimming="WordEllipsis" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding RouteMnemonic}" Foreground="{ThemeResource PhoneForegroundBrush}" FontSize="{ThemeResource TextStyleLargeFontSize}" TextTrimming="WordEllipsis" Margin="5, 0, 0, 0"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding ServiceMnemonic}" Foreground="{ThemeResource PhoneForegroundBrush}"  FontSize="{ThemeResource TextStyleMediumFontSize}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding NextArrival}" Foreground="{ThemeResource PhoneForegroundBrush}"  FontSize="{ThemeResource TextStyleMediumFontSize}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <Grid Grid.Row="2" x:Name="EmptyPredictionsList">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Background="{ThemeResource PhoneAccentBrush}" />
+                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                            <TextBlock Text="Nenhuma previsão no momento" Foreground="{ThemeResource PhoneForegroundBrush}" FontSize="{ThemeResource TextStyleLargeFontSize}" TextTrimming="WordEllipsis"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Tente selecionar uma nova parada" Foreground="{ThemeResource PhoneForegroundBrush}"  FontSize="{ThemeResource TextStyleMediumFontSize}" />
+                    </Grid>
+                </Grid>
+            </PivotItem>
+            <PivotItem x:Uid="FavoriteStopsScreen" x:Name="FavoriteStopsPivot">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <ProgressBar Grid.Row="1"
+                                 x:Name="FavoriteStopsProgressBar"
+                                 Height="10"
+                                 IsIndeterminate="True"
+                                 IsEnabled="True"
+                                 Visibility="Collapsed"/>
+                    <ListView Grid.Row="2"
+                              x:Name="favoriteStops"
+                              ItemsSource="{Binding Items}"
+                              Background="{ThemeResource PhoneBackgroundBrush}"
+                              Height="Auto" 
+                              ItemClick="favoriteStops_ItemClick"
+                              IsItemClickEnabled="True">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid x:Name="Service">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="4"/>
+                                        <ColumnDefinition Width="4"/>
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Background="{ThemeResource PhoneAccentBrush}" />
+                                    <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Mnemonic}" Foreground="{ThemeResource PhoneForegroundBrush}" FontSize="{ThemeResource TextStyleLargeFontSize}" TextTrimming="WordEllipsis" TextWrapping="WrapWholeWords"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <ListView Grid.Row="2"
+                              x:Name="editableFavoriteStops"
+                              ItemsSource="{Binding Items}"
+                              Background="{ThemeResource PhoneBackgroundBrush}"
+                              Height="Auto" 
+                              Visibility="Collapsed">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,5,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="4"/>
+                                        <ColumnDefinition Width="4"/>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Background="{ThemeResource PhoneAccentBrush}" />
+                                    <TextBox Grid.Row="0" Grid.Column="2" 
+                                             Text="{Binding Mnemonic, Mode=TwoWay}"
+                                             />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+                </Grid>
+            </PivotItem>
+            <PivotItem x:Uid="SearchScreen" x:Name="SearchPivot">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox Grid.Row="0" x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
+
+                    <ProgressBar Grid.Row="1"
+                                 x:Name="SearchProgressBar"
+                                 Height="10"
+                                 IsIndeterminate="True"
+                                 IsEnabled="True"
+                                 Visibility="Collapsed"
+                                 />
+                    <ListView Grid.Row="2" x:Name="searchResults" 
+                              Background="{ThemeResource PhoneBackgroundBrush}" 
+                              Height="Auto" 
+                              ItemClick="searchResults_ItemClick"
+                              IsItemClickEnabled="True">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid x:Name="Service" Margin="0,5,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="4"/>
+                                        <ColumnDefinition Width="4"/>
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Background="{ThemeResource PhoneAccentBrush}" />
+                                    <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding RouteCode}" Foreground="{ThemeResource PhoneForegroundBrush}" FontSize="{ThemeResource TextStyleLargeFontSize}" TextTrimming="WordEllipsis" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding RouteMnemonic}" Foreground="{ThemeResource PhoneForegroundBrush}" FontSize="{ThemeResource TextStyleLargeFontSize}" TextTrimming="WordEllipsis" Margin="5, 0, 0, 0"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Direction}" Foreground="{ThemeResource PhoneForegroundBrush}" FontSize="{ThemeResource TextStyleLargeFontSize}" TextTrimming="WordEllipsis" FontWeight="Bold"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                </Grid>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+    <Page.BottomAppBar>
+        <CommandBar IsSticky="False" x:Name="AppBar">
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Name="CenterMapButton" Icon="Map" IsCompact="True" Label="Centralizar" Click="CenterMapButton_Click"/>
+                <AppBarButton x:Name="FavoriteButton" Icon="Favorite" IsCompact="True" Label="Favoritar" Click="FavoriteButton_Click"/>
+                <AppBarButton x:Name="UnFavoriteButton" Icon="UnFavorite" IsCompact="True" Label="Desfavoritar" Click="UnFavoriteButton_Click"/>
+                <AppBarButton x:Name="SearchButton"
+                                    Icon="Find" IsCompact="True"
+                                    Click="SearchButton_Click"
+                                    Label="Procurar" />
+                <AppBarToggleButton x:Name="EditFavoriteStopsButton"
+                                    Icon="Edit" IsCompact="True"
+                                    Label="Editar" 
+                                    Checked="EditFavoriteStopsButton_Checked"
+                                    Unchecked="EditFavoriteStopsButton_Unchecked"/>
+            </CommandBar.PrimaryCommands>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="TicketsButton" Label="bilhete eletrônico" Click="TicketsButton_Click"/>
+                <AppBarButton x:Name="AboutButton" Label="sobre" Click="AboutButton_Click"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
+</Page>
